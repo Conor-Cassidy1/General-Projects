@@ -13,25 +13,14 @@ knitr::opts_chunk$set(echo = TRUE)
 This is just a short investigation into the scoring in the 2022/23 NBA season so far. It comes after a conversation with a friend in which we were discussing how the numbers that some players have been putting up recentely are ridiculous (e.g. D. Mitchell 71 point career high, L. Doncic's 60/20/10 game, Giannis w/ a career high etc.) and it made me question this offensive explosion... 
 
 # Data 
-from NBA website: https://www.nba.com/stats/players/traditional?TeamID=1610612749&Country=GR&PlayerPosition=F&StarterBench=Starters&DraftYear=2013&Season=2022-23
+?
 
-```{r echo = FALSE, include=FALSE}
-library(robotstxt)
+```{r echo = FALSE}
 library(tidyverse)
-library(robotstxt)
 library(dplyr)
-library(rvest)
-paths_allowed("https://www.nba.com/stats/players/traditional?TeamID=1610612749&Country=GR&PlayerPosition=F&StarterBench=Starters&DraftYear=2013&Season=2022-23")
+library(readxl)
 
-page <- read_html("https://www.nba.com/stats/players/traditional?TeamID=1610612749&Country=GR&PlayerPosition=F&StarterBench=Starters&DraftYear=2013&Season=2022-23")
-page
-typeof(page)
-class(page)
 
-stats <- page %>%
-  html_nodes(".Crom_container__C45Ti , :nth-child(30), .Crom_body__UYOcU :nth-child(29), .Crom_body__UYOcU :nth-child(28), .Crom_body__UYOcU :nth-child(27), .Crom_body__UYOcU :nth-child(18), .Crom_body__UYOcU :nth-child(17), .Crom_body__UYOcU :nth-child(16), .Crom_body__UYOcU :nth-child(15), .Crom_body__UYOcU :nth-child(12), .StatEventLink_sel__pAwmA, .Crom_body__UYOcU :nth-child(9), .Crom_body__UYOcU :nth-child(8), .Crom_body__UYOcU :nth-child(5), .Crom_body__UYOcU :nth-child(6), .Crom_body__UYOcU :nth-child(7), td:nth-child(4)") %>%
-  html_text() 
-stats
 ```
 
 

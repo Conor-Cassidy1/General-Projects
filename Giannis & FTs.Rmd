@@ -1,0 +1,25 @@
+---
+title: "Giannis' Success This Season and Free Throws"
+author: "Conor Cassidy"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+data: https://www.basketball-reference.com/players/a/antetgi01.html?sr&utm_source=direct&utm_medium=Share&utm_campaign=ShareTool
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(readxl)
+
+
+data <- read_excel("C:\\Users\\conor\\OneDrive\\Documents\\Personal\\Data science projects\\giannis_career_stats.xlsx")
+data
+
+
+```
+
