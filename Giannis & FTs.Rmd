@@ -11,15 +11,35 @@ knitr::opts_chunk$set(echo = TRUE)
 
 data: https://www.basketball-reference.com/players/a/antetgi01.html?sr&utm_source=direct&utm_medium=Share&utm_campaign=ShareTool
 
-```{r}
+```{r echo = FALSE}
 library(tidyverse)
 library(dplyr)
 library(readxl)
+library(tibble)
+library(ggplot2)
 
 
-data <- read_excel("C:\\Users\\conor\\OneDrive\\Documents\\Personal\\Data science projects\\giannis_career_stats.xlsx")
-data
-
-
+df <- read_excel("C:\\Users\\conor\\OneDrive\\Documents\\Personal\\Data science projects\\giannis_career_stats.xlsx")
+df
 ```
+
+```{r PPG} 
+ggplot(df, aes(y = PTS, x = Season)) + 
+geom_point() +
+geom_smooth(method = "lm", se = FALSE) +
+labs(x = "Season", y = "Average points scored per game", title = "Giannis' Average Points Scored per Game in each Season")
+```
+```{r FT%}
+ggplot(df, aes(y = `FT%`, x = Season)) + 
+geom_point() +
+geom_smooth(method = "lm", se = FALSE) +
+labs(x = "Season", y = "Percent of Free Throws Scored", title = "Giannis' Free Throw Percentage in each Season")
+```
+```{r}
+ggplot(df, aes(y = `FT%`, x = `FG%`)) + 
+geom_point() +
+geom_smooth(method = "lm", se = FALSE) +
+labs(x = "Season", y = "Average points scored per game", title = "Giannis' Average Points Scored per Game in each Season")
+```
+
 

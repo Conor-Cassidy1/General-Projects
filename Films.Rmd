@@ -2,7 +2,7 @@
 title: "Are Films Getting Worse?"
 author: "Conor Cassidy"
 date: "2023-01-07"
-output: html_document
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
@@ -59,6 +59,7 @@ imdb_top_250 <- imdb_top_250 %>%
 ```{r echo = FALSE}
 imdb_top_250 %>%
   count(year, sort = TRUE) 
+
 # by decades
 ggplot(imdb_top_250, aes(x= years)) + 
   geom_histogram(binwidth = 10) +
