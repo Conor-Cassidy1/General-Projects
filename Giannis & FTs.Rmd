@@ -28,13 +28,15 @@ ggplot(df, aes(y = PTS, x = Season)) +
 geom_point() +
 geom_smooth(method = "lm", se = FALSE) +
 labs(x = "Season", y = "Average points scored per game", title = "Giannis' Average Points Scored per Game in each Season")
+library(robotstxt)
 ```
-```{r FT%}
+```{r FT}
 ggplot(df, aes(y = `FT%`, x = Season)) + 
 geom_point() +
 geom_smooth(method = "lm", se = FALSE) +
 labs(x = "Season", y = "Percent of Free Throws Scored", title = "Giannis' Free Throw Percentage in each Season")
 ```
+
 ```{r}
 ggplot(df, aes(y = `FT%`, x = `FG%`)) + 
 geom_point() +

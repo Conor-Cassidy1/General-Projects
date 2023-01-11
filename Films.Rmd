@@ -14,12 +14,17 @@ I recently went to the cinema with a friend to see the new Black Panther film (I
 
 ## The Data
 Feel free to skip over this part - it just explains the technicalities of how I scraped the data for this analysis. It was obtained from the IMDb website's Top 250 Films List - given in url given above. The code for this is shown below, mostly using the tools from the rvest package. Once I had scraped the data, I just put it into the neat format provided by a 'tibble' table. 
-```{r}
+
+```{r include = FALSE}
 library(tibble)
 library(tidyverse)
 library(robotstxt)
 library(dplyr)
 library(rvest)
+```
+
+
+```{r }
 page <- read_html("https://www.imdb.com/chart/top/")
 
 paths_allowed("https://www.imdb.com/chart/top/")
