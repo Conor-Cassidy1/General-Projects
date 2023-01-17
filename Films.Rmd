@@ -230,15 +230,6 @@ ggplot(meta_250, aes(x= years2, fill = years2)) +
 ```
 
 ```{r}
-ggplot(meta_250, aes(x=decade, fill = decade)) +
-  geom_bar(stat = "count", fill = "light blue") + 
-  labs(
-    x = "Decade",
-    y = "Number of entries",
-    title = "Number of Entries into the Metacritic Top 250 Films Over the Decades") +
-  theme(legend.position = "none") +
-  theme_bw() 
-
 ggplot(NULL, aes(x = decade)) + 
   geom_bar(data = meta_250, stat = "count", fill = "yellow", alpha = .6) +
   geom_bar(data = imdb_top_250, stat = "count", fill = "blue", alpha = .5) +
