@@ -21,6 +21,7 @@ library(tidyverse)
 library(robotstxt)
 library(dplyr)
 library(rvest)
+library(stringr)
 ```
 
 
@@ -116,25 +117,141 @@ paths_allowed("https://www.metacritic.com/browse/movies/score/metascore/all/filt
 typeof(page_2)
 class(page_2)
 
+# 1st 100 films
 titles2 <- page_2 %>%
   html_nodes(".menu , h3") %>%
   html_text()
 titles2
+titles2 <- titles2[- c(1:13)]
 
+# 2nd 100 films
+page_3 <- read_html("https://www.metacritic.com/browse/movies/score/metascore/all/filtered?sort=desc&page=1")
+
+# 3rd 100 films
+page_4 <- read_html("https://www.metacritic.com/browse/movies/score/metascore/all/filtered?sort=desc&page=2")
+
+# 100-200
+
+somet <- page_3 %>%
+  html_nodes(".menu , h3") %>%
+  html_text()
+somet <- somet[- c(1:13)]
+
+somet1 <- page_4 %>%
+  html_nodes(".menu , h3") %>%
+  html_text()
+somet1 <- somet1[- c(1:13)]
+somet1 <- somet1[- c(51:100)]
+somet1
+
+# now top 250
+titles2 <- append(titles2, somet)
+titles2 <- append(titles2, somet1)
+titles2
+
+# now for the years
 years2 <- page_2 %>%
   html_nodes(".clamp-details span:nth-child(1)") %>%
   html_text() 
 years2
 
+years2 <- lapply(years2, function(x) str_sub(x, - 4 ,- 1 ))
+years2 <- as.character(years2)
+
+years_200 <- page_3 %>%
+  html_nodes(".clamp-details span:nth-child(1)") %>%
+  html_text() 
+years_200
+
+years_200 <- lapply(years_200, function(x) str_sub(x, - 4 ,- 1 ))
+years_200 <- as.character(years_200)
+
+years_300 <- page_4 %>%
+  html_nodes(".clamp-details span:nth-child(1)") %>%
+  html_text() 
+years_300
+
+years_300 <- years_300[- c(51:100)]
+years_300 <- lapply(years_300, function(x) str_sub(x, - 4 ,- 1 ))
+years_300 <- as.character(years_300)
+
+years2 <- append(years2, years_200)
+years2 <- append(years2, years_300)
+
+# finally the ratings too
 ratings2 <- page_2 %>% 
   html_nodes(".positive") %>%
   html_text() %>%
   as.numeric()
 ratings2
 
-#meta_250 <- tibble(
-#  title = titles2,
-#  year = years2,
-#  rating = ratings2)
+
+meta_250 <- tibble(
+  title = titles2,
+  year = years2)
+
+meta_250$decade <- as.factor(ifelse(meta_250$year < 1930, '1920s',
+                                 ifelse(meta_250$year %in% c(1930:1939), '1930s',
+                                 ifelse(meta_250$year %in% c(1940:1949), '1940s',
+                                 ifelse(meta_250$year %in% c(1950:1959), '1950s',
+                                 ifelse(meta_250$year %in% c(1960:1969), '1960s',
+                                 ifelse(meta_250$year %in% c(1970:1979), '1970s',
+                                 ifelse(meta_250$year %in% c(1980:1989), '1980s',
+                                 ifelse(meta_250$year %in% c(1990:1999), '1990s',
+                                 ifelse(meta_250$year %in% c(2000:2009), '2000s',
+                                 ifelse(meta_250$year %in% c(2010:2019), '2010s', '2020s')))))))))))
 ```
+
+```{r}
+meta_250 %>%
+  count(year, sort = TRUE) %>%
+  as_tibble()
+
+# by decades
+ggplot(meta_250, aes(x=decade, fill = decade)) +
+  geom_bar(stat = "count", fill = "light blue") + 
+  labs(
+    x = "Decade",
+    y = "Number of entries",
+    title = "Number of Entries into the Metacritic Top 250 Films Over the Decades") +
+  theme(legend.position = "none") +
+  theme_bw() 
+
+# by years
+ggplot(meta_250, aes(x= years2, fill = years2)) + 
+  geom_bar(stat = "count", fill = "light blue") +
+  labs(
+    x = "Year",
+    y = "Number of entries",
+    title = "Number of Entries into the Metacritic Top 250 Films Over the Years") +
+  theme(legend.position = "none") +
+  scale_x_discrete(breaks=seq(1920,2025,by=10)) +
+  theme_bw()
+```
+
+```{r}
+ggplot(meta_250, aes(x=decade, fill = decade)) +
+  geom_bar(stat = "count", fill = "light blue") + 
+  labs(
+    x = "Decade",
+    y = "Number of entries",
+    title = "Number of Entries into the Metacritic Top 250 Films Over the Decades") +
+  theme(legend.position = "none") +
+  theme_bw() 
+
+ggplot(NULL, aes(x = decade)) + 
+  geom_bar(data = meta_250, stat = "count", fill = "yellow", alpha = .6) +
+  geom_bar(data = imdb_top_250, stat = "count", fill = "blue", alpha = .5) +
+  labs(
+    x = "Decade",
+    y = "Number of entries",
+    title = "Number of Entries into the Top 250 Films Over the Decades",
+    subtitle = "Yellow represents the Metacritic data while blue represents IMDb") +
+  scale_fill_manual(values=c("lightblue", "pink")) +
+  scale_x_discrete(breaks=seq(1920,2025,by=10)) +
+  theme_bw()
+  
+## no meta on there and no legend ??
+```
+
 
