@@ -1,8 +1,11 @@
 ---
 title: "Are Films Getting Worse?"
 author: "Conor Cassidy"
-date: "2023-01-07"
-output: pdf_document
+date: "07-01-2023"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
@@ -13,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 I recently went to the cinema with a friend to see the new Black Panther film (I wouldn't recommend...) which sparked an interesting conversation afterwards - are films getting worse? We were trying to rack our brains of films that have came out in the last few years that were among our favourites. After we struggled to think of many, we took to IMDb to check if we were just being forgetful or if there genuinely were not that many great films released recently. I decided to do a little analysis of the Top 250 films, according to IMDb, over the years to see if they are indeed getting worse. The list can be found here via the following url: https://www.imdb.com/chart/top/.
 
 ## The Data
-Feel free to skip over this part - it just explains the technicalities of how I scraped the data for this analysis. It was obtained from the IMDb website's Top 250 Films List - given in url given above. The code for this is shown below, mostly using the tools from the rvest package. Once I had scraped the data, I just put it into the neat format provided by a 'tibble' table. 
+Feel free to skip over this part - it just explains the technicalities of how I scraped the data for this analysis. It was obtained from the IMDb website's Top 250 Films List - given in url given above. The code for this is shown in the .Rmd file on the Github page. For the most part, I done it using the tools from the rvest package. One of the main reasons I chose to undertake this project was to practice some data scraping. 
 
 ```{r include = FALSE}
 library(tibble)
@@ -74,9 +77,12 @@ imdb_top_250$decade <- as.factor(ifelse(imdb_top_250$year < 1930, '1920s',
 ## Which years produced the best films?
 
 ```{r echo = FALSE}
-imdb_top_250 %>%
-  count(year, sort = TRUE) %>%
-  as_tibble()
+top_years <- imdb_top_250 %>%
+  count(year, sort = TRUE) %>% 
+  rename("Year" = year, "Number of Films in the Top 250" = n) %>% 
+  top_n(10) %>% 
+  suppressMessages()
+knitr::kable(top_years)
 
 # by decades
 ggplot(imdb_top_250, aes(x=decade, fill = decade)) +
@@ -107,6 +113,10 @@ We can see that the mid-to-late 90s and early-mid 2000s were great years for fil
 ## The Verdict
 Taking all of the analysis into consideration, I think it's fair to conclude that there hasn't been a 'good' year for films since 2019. The last time it wasn't a 'good' year for films before this was over 20 years ago - in 1996. So yes, me and my friend seem vindicated in the view that the cinema seems to be in a bit of a slump at the minute...
 
+
+## RECOUNT!!! 
+
+After different friend of mine read this report thus far, they disagreed. They proceeded to list of some recent films that they thought were great and the report was a sham. I couldn't accept them sullying this technical report with such slander! So I decided to augment this report with a further supplementary investigation. How could this be done? I used a different source for the Top 250 All Time Films! I used another website, metacritic, find it here if you wish to browse https://www.metacritic.com/browse/movies/score/metascore/all/filtered?sort=desc. Again, like in the previous section of IMDb data, I scraped the data from the metacritic website. If you're interested in how this was done, please feel free to look at the code in the .Rmd file of the Github page. 
 
 
 ```{r include = FALSE}
@@ -202,10 +212,16 @@ meta_250$decade <- as.factor(ifelse(meta_250$year < 1930, '1920s',
                                  ifelse(meta_250$year %in% c(2010:2019), '2010s', '2020s')))))))))))
 ```
 
-```{r}
-meta_250 %>%
-  count(year, sort = TRUE) %>%
-  as_tibble()
+
+Below, I perform the same analysis as for the IMDb data but now using the metacritic data. 
+
+```{r meta, echo = FALSE}
+top_years2 <- meta_250 %>%
+  count(year, sort = TRUE) %>% 
+  rename("Year" = year, "Number of Films in the Top 250" = n) %>% 
+  top_n(10) %>% 
+  suppressMessages()
+knitr::kable(top_years2)
 
 # by decades
 ggplot(meta_250, aes(x=decade, fill = decade)) +
@@ -229,20 +245,57 @@ ggplot(meta_250, aes(x= years2, fill = years2)) +
   theme_bw()
 ```
 
-```{r}
+To get a better idea of how this compares to the IMDb data, I made the following plot and graph:
+
+```{r combined, echo = FALSE}
+# Plot to compare the number of films in each lists top 250 per decade
 ggplot(NULL, aes(x = decade)) + 
-  geom_bar(data = meta_250, stat = "count", fill = "yellow", alpha = .6) +
-  geom_bar(data = imdb_top_250, stat = "count", fill = "blue", alpha = .5) +
+  geom_bar(data = meta_250, aes(fill = "metacritic"), stat = "count", alpha = 0.6, show.legend = TRUE) +
+  geom_bar(data = imdb_top_250, aes(fill = "IMDb"), stat = "count", alpha = 0.5, show.legend = TRUE) +
   labs(
     x = "Decade",
-    y = "Number of entries",
-    title = "Number of Entries into the Top 250 Films Over the Decades",
-    subtitle = "Yellow represents the Metacritic data while blue represents IMDb") +
-  scale_fill_manual(values=c("lightblue", "pink")) +
-  scale_x_discrete(breaks=seq(1920,2025,by=10)) +
-  theme_bw()
-  
-## no meta on there and no legend ??
+    y = "Number of Entries",
+    title = "Number of Entries into the Top 250 Films Over the Decades") +
+  scale_fill_manual(values = c("metacritic" = "yellow", "IMDb" = "blue"), labels = c("IMDb", "metacritic")) +
+  scale_x_discrete(breaks = seq(1920, 2025, by = 10)) +
+  theme_bw() + 
+  theme(legend.title = element_blank())
+
+
+# Table w/ recent 5 years comparing # in top 250 for meta & imdb
+meta_recent <- meta_250 %>%
+  count(year, sort = TRUE) %>% 
+  rename("Year" = year, "Number of Films in the Top 250" = n) %>% 
+  arrange(desc(Year)) %>% 
+  slice(1:6)
+
+imdb_recent <- imdb_top_250 %>%
+  count(year, sort = TRUE) %>% 
+  rename("Year" = year, "Number of Films in the Top 250" = n) %>% 
+  arrange(desc(Year)) %>% 
+  slice(1:6)
+
+# Convert the "Year" column to character type in both tables
+meta_recent$Year <- as.character(meta_recent$Year)
+imdb_recent$Year <- as.character(imdb_recent$Year)
+
+# Perform the left join and rename columns
+combined_table <- left_join(meta_recent, imdb_recent, by = "Year") %>%
+  rename(Meta = `Number of Films in the Top 250.x`,
+         IMDb = `Number of Films in the Top 250.y`) %>%
+  select(Year, Meta, IMDb)
+
+knitr::kable(combined_table)
 ```
 
+N.B., in the Year Column above that TBA ("To Be Announced") means that the film is not yet released. This is the case for two of the films in the metacritic top 250 list ("The Zone of Interest", and "The Delinquents"). This basically just means that they are previewed by critics at e.g. Cannes Film Festival and scored based from these. 
 
+FIX OVERLAYED PLOT X-AXIS
+
+It is now easier to see and definitively say that these two sources differ in their rankings of recent films. Metacritic ranks more recent films higher than IMDb does in their top 250 rankings. This can be seen in the graph above, where the two most recent decades (20s & 10s) have more top 250 films than IMDb, whereas IMDb has more top 250 films allocated in the decades of the 80s, 90s, & 00s. 
+
+In fact, metacritic has more films in their top 250 list than IMDb in each of the last 5 years.  
+
+So, perhaps unsurprisingly, the answer to the question "Are films getting worse?" seems to be subjective. If you are inclined to agree with me, you might just want to use IMDb to help choose which films to watch next, whereas if you are a fan of more recent cinema you may wish to use metacritic to decide which movie to watch next. 
+
+Thank you for reading!
