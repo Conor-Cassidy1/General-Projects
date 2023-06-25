@@ -262,6 +262,7 @@ ggplot(NULL, aes(x = decade)) +
   theme(legend.title = element_blank())
 
 
+
 # Table w/ recent 5 years comparing # in top 250 for meta & imdb
 meta_recent <- meta_250 %>%
   count(year, sort = TRUE) %>% 
@@ -290,11 +291,8 @@ knitr::kable(combined_table)
 
 N.B., in the Year Column above that TBA ("To Be Announced") means that the film is not yet released. This is the case for two of the films in the metacritic top 250 list ("The Zone of Interest", and "The Delinquents"). This basically just means that they are previewed by critics at e.g. Cannes Film Festival and scored based from these. 
 
-FIX OVERLAYED PLOT X-AXIS
 
-It is now easier to see and definitively say that these two sources differ in their rankings of recent films. Metacritic ranks more recent films higher than IMDb does in their top 250 rankings. This can be seen in the graph above, where the two most recent decades (20s & 10s) have more top 250 films than IMDb, whereas IMDb has more top 250 films allocated in the decades of the 80s, 90s, & 00s. 
-
-In fact, metacritic has more films in their top 250 list than IMDb in each of the last 5 years.  
+It is now easier to see and definitively say that these two sources differ in their rankings of recent films. Metacritic ranks more recent films higher than IMDb does in their top 250 rankings. This can be seen in the graph above, where the two most recent decades (20s & 10s) have more top 250 films than IMDb, whereas IMDb has more top 250 films allocated in the decades of the 80s, 90s, & 00s. In fact, metacritic has more films in their top 250 list than IMDb in each of the last 5 years.  
 
 So, perhaps unsurprisingly, the answer to the question "Are films getting worse?" seems to be subjective. If you are inclined to agree with me, you might just want to use IMDb to help choose which films to watch next, whereas if you are a fan of more recent cinema you may wish to use metacritic to decide which movie to watch next. 
 
