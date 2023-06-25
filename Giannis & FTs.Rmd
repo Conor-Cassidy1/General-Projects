@@ -1,17 +1,24 @@
 ---
-title: "Giannis' Success This Season and Free Throws"
+title: "Giannis' Shooting this Season and Free Throws"
 author: "Conor Cassidy"
-date: "`r Sys.Date()`"
-output: html_document
+date: "10/01/2023"
+output:
+  pdf_document: default
+  html_document: default
 ---
+
+## Short investigation
+
+The purpose of this investigation was used to persuade a friend of mine in a discussion about shooting from the field vs from the free throw line in basketball. More specifically, he thought that the free throw shooting of Greek star, and our favourite player, Giannis Antetokounmpo was a near perfect barometer for his season's overall shooting and success. That is to say, when he shot a good free throw percentage, he would have better shooting from the field and average more points per game as a result. I'm not quite sure why I didn't like this argument, but I didn't. I think it might have been because I hoped he would do well this season (2022-23) despite not shooting very well from the free throw line. So, in search of some hope, I started this quick and brief report to see if he was right; if Giannis and the Buck's (his team) chances for regular season success was a write off. 
+
+I got the data from the following website: https://www.basketball-reference.com/players/a/antetgi01.html?sr&utm_source=direct&utm_medium=Share&utm_campaign=ShareTool. I downloaded it to excel and imported it to R from there, and done this approaching the midpoint of the season - after Giannis had played 33 games in the regular season (out of 82).  
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-data: https://www.basketball-reference.com/players/a/antetgi01.html?sr&utm_source=direct&utm_medium=Share&utm_campaign=ShareTool
-
-```{r echo = FALSE}
+```{r include=FALSE}
 library(tidyverse)
 library(dplyr)
 library(readxl)
@@ -23,25 +30,61 @@ df <- read_excel("C:\\Users\\conor\\OneDrive\\Documents\\Personal\\Data science 
 df
 ```
 
-```{r PPG} 
+The first plot is one for context. It shows how Giannis' scoring has evolved over his career so far, and also shows his career average (on the last data point). From the figure below, it is clear to see that since his rookie season in 2013-14, he has continuously improved his scoring, season after season. His average points scored per game begins to plateau at around 28, with some variation taking him to as high as 30 points per game. Also, note that his current average points per game in the limited games he has played so far this season puts this year on track to be his best season yet - averaging over 32 points per game. That is to say, he is having an all-time scoring season by his standards (by any ones standards, really).
+
+```{r PPG, echo = FALSE, message=FALSE} 
 ggplot(df, aes(y = PTS, x = Season)) + 
 geom_point() +
 geom_smooth(method = "lm", se = FALSE) +
 labs(x = "Season", y = "Average points scored per game", title = "Giannis' Average Points Scored per Game in each Season")
 library(robotstxt)
 ```
-```{r FT}
+
+The next plot tells quite a different story. It shows his free throw shooting percentage in each season of his career, and his career average (in the last data point). This does not even remotely resemble the continued improvement of his average points per game seen in the previous graph. Instead, we see that his free trow shooting percentage has varied dramatically over his career; shooting over 76% at his best and below 64% at his worst. If his poor free throw shooting this season continues at pace, it will be the second worst of his career so far and far below his career average of roughly 71%.
+
+
+```{r FT, echo = FALSE, message=FALSE}
 ggplot(df, aes(y = `FT%`, x = Season)) + 
 geom_point() +
 geom_smooth(method = "lm", se = FALSE) +
 labs(x = "Season", y = "Percent of Free Throws Scored", title = "Giannis' Free Throw Percentage in each Season")
 ```
 
-```{r}
-ggplot(df, aes(y = `FT%`, x = `FG%`)) + 
+Now if what my friend says is true, since Giannis is having a poor free throw shooting season so far, surely his field goal shooting must be poor too...
+
+```{r FG, echo = FALSE, message=FALSE}
+ggplot(df, aes(y = `FG%`, x = Season)) + 
 geom_point() +
 geom_smooth(method = "lm", se = FALSE) +
-labs(x = "Season", y = "Average points scored per game", title = "Giannis' Average Points Scored per Game in each Season")
+labs(x = "Season", y = "Percent of Field Goals Scored", title = "Giannis' Field Goal Percentage in each Season")
 ```
 
+In the above figure we can see that Giannis' field goal percentage, like his scoring averages, was improving for most of his career since his rookie season. However, after the 2020-21 season (the season he led his team to a Championship win) his field goal shooting has slightly dipped. In fact, in this season so far his field goal shooting has fallen to the same levels as his 5th year in the league in 2017-18 at around 53%. Note thought that this is only slightly below his career average. Nonetheless, credit where credit is due - my friends argument with regard to his field goal shooting held some truth to it in this particular instance. His shooting percentages moved downwards together, as he suggested.
 
+What is interesting to note though, is that despite this season so far and the past season being ones in which his field goal percentage has fallen and his free throw shooting has dipped and is at its second lowest point this season so far, it is in these seasons that he is averaging more points scored per game than ever before. 
+
+So, while Giannis' field goal and free throw percentages are falling this season so far compared to previous seasons, he is still managing to score more points per game than ever before. 
+
+Just as a final short tangent, in case you felt confused, I felt I should include the following graph to explain (at least partially) how Giannis is managing to increase his average points scored per game despite shooting a lower field goal and free throw percentage. The answer, in case you haven't guessed already is a fairly simple one: volume. He has just been attempting more shots, and since he is shooting more, he is scoring more. This is seen below, where in this season so far, both field goals and free throws attempted are at their highest levels in his career so far.
+
+```{r FTA and FGA, echo = FALSE, message=FALSE}
+ggplot(df, aes(x = Season)) +
+  geom_point(aes(y = FGA, color = "Field Goals Attempted")) +
+  geom_point(aes(y = FTA, color = "Free Throws Attempted")) +
+  geom_smooth(aes(y = FGA, color = "Field Goals Attempted"), method = "lm", se = FALSE) +
+  geom_smooth(aes(y = FTA, color = "Free Throws Attempted"), method = "lm", se = FALSE) +
+  labs(
+    x = "Season",
+    y = "Field Goals / Free Throws Attempted",
+    title = "Giannis' Field Goals and Free Throws Attempted in each Season"
+  ) +
+  scale_color_manual(
+    values = c("Field Goals Attempted" = "blue", "Free Throws Attempted" = "red"),
+    labels = c("Field Goals Attempted", "Free Throws Attempted")
+  ) +
+  theme(
+    legend.title = element_blank())
+
+```
+
+Thank you for reading!
